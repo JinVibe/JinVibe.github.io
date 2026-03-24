@@ -1,0 +1,83 @@
+name: 포트폴리오 / 사이트 작업
+description: JinVibe.github.io에 적용할 작업·기능·수정을 정의할 때 사용합니다.
+title: "[섹션] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        아래 항목을 채우면 작업 범위와 완료 기준이 분명해집니다.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 작업 유형
+      options:
+        - 기능 추가
+        - UI/스타일
+        - 콘텐츠
+        - 리팩터/구조
+        - 버그 수정
+        - 문서/README
+        - 기타
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 영역 (해당하는 것)
+      options:
+        - 전체 / 공통
+        - Hero
+        - About
+        - Skills
+        - Projects
+        - Experience
+        - Contact / Footer
+        - 네비게이션
+        - SEO / 메타
+        - 접근성 / 성능
+        - 배포 / GitHub Pages
+        - 기타
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 목표 (한 줄)
+      description: 이 이슈에서 무엇을 달성하면 되는지 요약합니다.
+      placeholder: 예) Hero에 프로필 이미지와 CTA 버튼을 추가한다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: 상세 설명
+      description: 배경, 레퍼런스, 스크린샷 링크 등을 적습니다.
+      placeholder: |
+        - 왜 필요한지
+        - 참고한 사이트/디자인 (URL)
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 완료 조건 (체크리스트)
+      description: PR 전에 스스로 확인할 항목입니다. `- [ ]` 형식으로 적어도 됩니다.
+      value: |
+        - [ ] 로컬/배포에서 동작 확인
+        - [ ] 모바일 너비에서 레이아웃 확인
+        - [ ] 관련 파일만 변경 (불필요한 diff 없음)
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 메모 / 이후 작업
+      description: 이번 이슈 범위 밖이지만 나중에 할 일을 적습니다.
+    validations:
+      required: false
