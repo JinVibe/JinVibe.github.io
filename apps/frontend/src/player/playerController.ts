@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { MovementInput } from "../input/keyboard";
-import { WORLD_BOUNDS } from "../world/terrain";
+import { getTerrainHeight, WORLD_BOUNDS } from "../world/terrain";
 
 const movementVector = new THREE.Vector3();
 
@@ -39,7 +39,8 @@ export const createPlayerController = ({
         player.rotation.y = Math.atan2(movementVector.x, movementVector.z);
       }
 
-      player.position.y = 0.18 + Math.sin(elapsed * 5.2) * 0.035;
+      const groundHeight = getTerrainHeight(player.position.x, player.position.z);
+      player.position.y = groundHeight + 0.18 + Math.sin(elapsed * 5.2) * 0.035;
       hat.rotation.z = Math.sin(elapsed * 3.2) * 0.05;
     },
   };

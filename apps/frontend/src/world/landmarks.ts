@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { getTerrainHeight } from "./terrain";
 
 const createTower = () => {
   const tower = new THREE.Group();
@@ -22,7 +23,7 @@ const createTower = () => {
   const beacon = new THREE.PointLight(0xf6d26b, 5, 26);
   beacon.position.y = 16.4;
   tower.add(beacon);
-  tower.position.set(16, 0, -58);
+  tower.position.set(16, getTerrainHeight(16, -58), -58);
 
   return tower;
 };
@@ -71,12 +72,14 @@ const addTrees = (scene: THREE.Scene) => {
   const scaleVector = new THREE.Vector3();
 
   treePoints.forEach(([x, z, scale], index) => {
-    position.set(x, 0.68 * scale, z);
+    const groundHeight = getTerrainHeight(x, z);
+
+    position.set(x, groundHeight + 0.68 * scale, z);
     scaleVector.setScalar(scale);
     matrix.compose(position, quaternion, scaleVector);
     trunks.setMatrixAt(index, matrix);
 
-    position.set(x, 2.1 * scale, z);
+    position.set(x, groundHeight + 2.1 * scale, z);
     matrix.compose(position, quaternion, scaleVector);
     leaves.setMatrixAt(index, matrix);
   });
