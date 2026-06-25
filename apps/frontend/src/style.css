@@ -1,0 +1,80 @@
+:root {
+  color: #f7f0dc;
+  background: #0f1720;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+.hud {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  width: min(330px, calc(100vw - 40px));
+  color: #fff7df;
+  text-shadow: 0 2px 10px rgba(15, 23, 32, 0.45);
+  pointer-events: none;
+}
+
+.hud h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 4vw, 42px);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.hud p {
+  margin: 0;
+  color: rgba(255, 247, 223, 0.82);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.status {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  color: #24301f;
+  background: rgba(255, 247, 223, 0.86);
+  border: 1px solid rgba(58, 76, 42, 0.16);
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgba(9, 15, 20, 0.18);
+}
+
+.status kbd {
+  min-width: 24px;
+  padding: 3px 7px;
+  color: #1c2619;
+  background: #ffffff;
+  border: 1px solid rgba(36, 48, 31, 0.18);
+  border-radius: 5px;
+  font: inherit;
+  text-align: center;
+}
+
+canvas {
+  display: block;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "jinvibe-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:fe": "npm --workspace @jinvibe/frontend run dev",
+    "build:fe": "npm --workspace @jinvibe/frontend run build",
+    "preview:fe": "npm --workspace @jinvibe/frontend run preview"
+  }
+}
