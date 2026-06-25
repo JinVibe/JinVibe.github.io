@@ -1,28 +1,5 @@
 import * as THREE from "three";
 
-const createTree = (x: number, z: number, scale: number) => {
-  const tree = new THREE.Group();
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.16 * scale, 0.24 * scale, 1.35 * scale, 8),
-    new THREE.MeshStandardMaterial({ color: 0x6f4a28, roughness: 0.88 }),
-  );
-  trunk.position.y = 0.68 * scale;
-  trunk.castShadow = true;
-  tree.add(trunk);
-
-  const leaves = new THREE.Mesh(
-    new THREE.ConeGeometry(0.92 * scale, 2.2 * scale, 9),
-    new THREE.MeshStandardMaterial({ color: 0x2f6d3d, roughness: 0.9 }),
-  );
-  leaves.position.y = 2.1 * scale;
-  leaves.castShadow = true;
-  tree.add(leaves);
-
-  tree.position.set(x, 0, z);
-
-  return tree;
-};
-
 const createTower = () => {
   const tower = new THREE.Group();
   const towerBase = new THREE.Mesh(
@@ -50,7 +27,7 @@ const createTower = () => {
   return tower;
 };
 
-export const addLandmarks = (scene: THREE.Scene) => {
+const addTrees = (scene: THREE.Scene) => {
   const treePoints = [
     [-23, -12, 1.2],
     [-29, 9, 1.6],
@@ -64,9 +41,52 @@ export const addLandmarks = (scene: THREE.Scene) => {
     [53, 31, 2],
   ] as const;
 
-  treePoints.forEach(([x, z, scale]) => {
-    scene.add(createTree(x, z, scale));
+  const trunkGeometry = new THREE.CylinderGeometry(0.16, 0.24, 1.35, 8);
+  const leafGeometry = new THREE.ConeGeometry(0.92, 2.2, 9);
+  const trunkMaterial = new THREE.MeshStandardMaterial({
+    color: 0x6f4a28,
+    roughness: 0.88,
+  });
+  const leafMaterial = new THREE.MeshStandardMaterial({
+    color: 0x2f6d3d,
+    roughness: 0.9,
   });
 
+  const trunks = new THREE.InstancedMesh(
+    trunkGeometry,
+    trunkMaterial,
+    treePoints.length,
+  );
+  const leaves = new THREE.InstancedMesh(
+    leafGeometry,
+    leafMaterial,
+    treePoints.length,
+  );
+  trunks.castShadow = true;
+  leaves.castShadow = true;
+
+  const matrix = new THREE.Matrix4();
+  const position = new THREE.Vector3();
+  const quaternion = new THREE.Quaternion();
+  const scaleVector = new THREE.Vector3();
+
+  treePoints.forEach(([x, z, scale], index) => {
+    position.set(x, 0.68 * scale, z);
+    scaleVector.setScalar(scale);
+    matrix.compose(position, quaternion, scaleVector);
+    trunks.setMatrixAt(index, matrix);
+
+    position.set(x, 2.1 * scale, z);
+    matrix.compose(position, quaternion, scaleVector);
+    leaves.setMatrixAt(index, matrix);
+  });
+
+  trunks.instanceMatrix.needsUpdate = true;
+  leaves.instanceMatrix.needsUpdate = true;
+  scene.add(trunks, leaves);
+};
+
+export const addLandmarks = (scene: THREE.Scene) => {
+  addTrees(scene);
   scene.add(createTower());
 };
