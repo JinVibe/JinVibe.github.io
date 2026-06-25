@@ -1,8 +1,10 @@
 import * as THREE from "three";
 import type { MovementInput } from "../input/keyboard";
+import { isPositionBlocked } from "../world/collision";
 import { getTerrainHeight, WORLD_BOUNDS } from "../world/terrain";
 
 const movementVector = new THREE.Vector3();
+const nextPosition = new THREE.Vector3();
 
 export type PlayerControllerOptions = {
   player: THREE.Group;
@@ -25,17 +27,23 @@ export const createPlayerController = ({
 
       if (movementVector.lengthSq() > 0) {
         movementVector.normalize().multiplyScalar(speed * delta);
-        player.position.add(movementVector);
-        player.position.x = THREE.MathUtils.clamp(
-          player.position.x,
+        nextPosition.copy(player.position).add(movementVector);
+        nextPosition.x = THREE.MathUtils.clamp(
+          nextPosition.x,
           WORLD_BOUNDS.minX,
           WORLD_BOUNDS.maxX,
         );
-        player.position.z = THREE.MathUtils.clamp(
-          player.position.z,
+        nextPosition.z = THREE.MathUtils.clamp(
+          nextPosition.z,
           WORLD_BOUNDS.minZ,
           WORLD_BOUNDS.maxZ,
         );
+
+        if (!isPositionBlocked(nextPosition.x, nextPosition.z)) {
+          player.position.x = nextPosition.x;
+          player.position.z = nextPosition.z;
+        }
+
         player.rotation.y = Math.atan2(movementVector.x, movementVector.z);
       }
 
