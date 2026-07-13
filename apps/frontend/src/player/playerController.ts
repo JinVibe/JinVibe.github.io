@@ -1,21 +1,23 @@
 import * as THREE from "three";
 import type { MovementInput } from "../input/keyboard";
-import { isPositionBlocked } from "../world/collision";
-import { getTerrainHeight, WORLD_BOUNDS } from "../world/terrain";
+import { PITCH } from "../world/pitch";
 
 const movementVector = new THREE.Vector3();
 const nextPosition = new THREE.Vector3();
+const facingDirection = new THREE.Vector3(0, 0, -1);
 
 export type PlayerControllerOptions = {
   player: THREE.Group;
-  hat: THREE.Object3D;
+  leftLeg: THREE.Object3D;
+  rightLeg: THREE.Object3D;
   speed?: number;
 };
 
 export const createPlayerController = ({
   player,
-  hat,
-  speed = 10,
+  leftLeg,
+  rightLeg,
+  speed = 13,
 }: PlayerControllerOptions) => {
   return {
     update(input: MovementInput, delta: number, elapsed: number) {
@@ -30,26 +32,27 @@ export const createPlayerController = ({
         nextPosition.copy(player.position).add(movementVector);
         nextPosition.x = THREE.MathUtils.clamp(
           nextPosition.x,
-          WORLD_BOUNDS.minX,
-          WORLD_BOUNDS.maxX,
+          PITCH.minX + 1,
+          PITCH.maxX - 1,
         );
         nextPosition.z = THREE.MathUtils.clamp(
           nextPosition.z,
-          WORLD_BOUNDS.minZ,
-          WORLD_BOUNDS.maxZ,
+          PITCH.minZ + 4,
+          PITCH.maxZ - 2,
         );
 
-        if (!isPositionBlocked(nextPosition.x, nextPosition.z)) {
-          player.position.x = nextPosition.x;
-          player.position.z = nextPosition.z;
-        }
-
+        player.position.x = nextPosition.x;
+        player.position.z = nextPosition.z;
         player.rotation.y = Math.atan2(movementVector.x, movementVector.z);
       }
 
-      const groundHeight = getTerrainHeight(player.position.x, player.position.z);
-      player.position.y = groundHeight + 0.18 + Math.sin(elapsed * 5.2) * 0.035;
-      hat.rotation.z = Math.sin(elapsed * 3.2) * 0.05;
+      player.position.y = Math.sin(elapsed * 8) * (movementVector.lengthSq() > 0 ? 0.045 : 0.012);
+      leftLeg.rotation.x = Math.sin(elapsed * 10) * (movementVector.lengthSq() > 0 ? 0.55 : 0.08);
+      rightLeg.rotation.x = -leftLeg.rotation.x;
+    },
+    getFacingDirection() {
+      facingDirection.set(Math.sin(player.rotation.y), 0, Math.cos(player.rotation.y)).normalize();
+      return facingDirection;
     },
   };
 };
