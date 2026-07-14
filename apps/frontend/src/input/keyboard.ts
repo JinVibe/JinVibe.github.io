@@ -3,6 +3,10 @@ export type MovementInput = {
   backward: boolean;
   left: boolean;
   right: boolean;
+  aimForward: boolean;
+  aimBackward: boolean;
+  aimLeft: boolean;
+  aimRight: boolean;
   shootHeld: boolean;
   shootReleased: boolean;
   shotPower: number;
@@ -44,10 +48,14 @@ export const createKeyboardInput = () => {
       const heldPower =
         shootStart > 0 ? Math.min((performance.now() - shootStart) / 1200, 1) : 0;
       const movement = {
-        forward: keys.has("w") || keys.has("arrowup"),
-        backward: keys.has("s") || keys.has("arrowdown"),
-        left: keys.has("a") || keys.has("arrowleft"),
-        right: keys.has("d") || keys.has("arrowright"),
+        forward: keys.has("w"),
+        backward: keys.has("s"),
+        left: keys.has("a"),
+        right: keys.has("d"),
+        aimForward: keys.has("arrowup"),
+        aimBackward: keys.has("arrowdown"),
+        aimLeft: keys.has("arrowleft"),
+        aimRight: keys.has("arrowright"),
         shootHeld: shootStart > 0,
         shootReleased,
         shotPower: shootReleased ? shootReleasePower : heldPower,

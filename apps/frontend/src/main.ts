@@ -48,15 +48,26 @@ scene.add(pitch, stadium, player, ball.mesh);
 
 const goalDirection = new THREE.Vector3(0, 0, -1);
 const shotDirection = new THREE.Vector3();
+const dribbleDirection = new THREE.Vector3();
 
-const getDirectionalVector = (movement: ReturnType<typeof input.getMovement>) => {
+const getShotVector = (movement: ReturnType<typeof input.getMovement>) => {
   shotDirection.set(0, 0, 0);
-  if (movement.forward) shotDirection.z -= 1;
-  if (movement.backward) shotDirection.z += 1;
-  if (movement.left) shotDirection.x -= 1;
-  if (movement.right) shotDirection.x += 1;
+  if (movement.aimForward) shotDirection.z -= 1;
+  if (movement.aimBackward) shotDirection.z += 1;
+  if (movement.aimLeft) shotDirection.x -= 1;
+  if (movement.aimRight) shotDirection.x += 1;
 
   return shotDirection.lengthSq() > 0 ? shotDirection.normalize() : null;
+};
+
+const getDribbleVector = (movement: ReturnType<typeof input.getMovement>) => {
+  dribbleDirection.set(0, 0, 0);
+  if (movement.forward) dribbleDirection.z -= 1;
+  if (movement.backward) dribbleDirection.z += 1;
+  if (movement.left) dribbleDirection.x -= 1;
+  if (movement.right) dribbleDirection.x += 1;
+
+  return dribbleDirection.lengthSq() > 0 ? dribbleDirection.normalize() : null;
 };
 
 const animate = () => {
@@ -66,13 +77,14 @@ const animate = () => {
 
   playerController.update(movement, delta, elapsed);
   const facingDirection = playerController.getFacingDirection();
-  const directionalShot = getDirectionalVector(movement);
+  const directionalShot = getShotVector(movement);
+  const directionalDribble = getDribbleVector(movement);
   setShotPower(movement.shotPower);
 
   if (ball.isNear(player.position)) {
     ball.dribbleTo(
       player.position,
-      directionalShot ?? facingDirection,
+      directionalDribble ?? facingDirection,
       delta,
       playerController.getSpeed(),
     );
