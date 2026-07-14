@@ -5,6 +5,7 @@ import { bindResize, createCamera, createRenderer } from "./core/renderer";
 import { createKeyboardInput } from "./input/keyboard";
 import { createPlayer } from "./player/createPlayer";
 import { createPlayerController } from "./player/playerController";
+import { createAimIndicator } from "./ui/aimIndicator";
 import { mountHud, setScore, setShotPower } from "./ui/hud";
 import { addWorldLighting } from "./world/lighting";
 import { createPitch } from "./world/pitch";
@@ -39,12 +40,13 @@ const playerController = createPlayerController({
   rightArm,
 });
 const ball = createBall();
+const aimIndicator = createAimIndicator();
 let score = 0;
 
 addWorldLighting(scene);
 player.position.set(0, 0, 22);
 player.rotation.y = Math.PI;
-scene.add(pitch, stadium, player, ball.mesh);
+scene.add(pitch, stadium, player, ball.mesh, aimIndicator.group);
 
 const goalDirection = new THREE.Vector3(0, 0, -1);
 const shotDirection = new THREE.Vector3();
@@ -80,6 +82,7 @@ const animate = () => {
   const directionalShot = getShotVector(movement);
   const directionalDribble = getDribbleVector(movement);
   setShotPower(movement.shotPower);
+  aimIndicator.update(ball.mesh.position, directionalShot, movement.shotPower);
 
   if (ball.isNear(player.position)) {
     ball.dribbleTo(

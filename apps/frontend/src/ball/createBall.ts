@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { PITCH } from "../world/pitch";
 
 const BALL_RADIUS = 0.42;
-const FRICTION = 0.982;
+const FRICTION = 0.978;
 const GRAVITY = 18;
 const idleVector = new THREE.Vector3();
 const shotDirection = new THREE.Vector3();
@@ -60,6 +60,7 @@ export const createBall = (): BallController => {
 
   const velocity = new THREE.Vector3();
   const spinAxis = new THREE.Vector3(1, 0, 0);
+  let touchCooldown = 0;
 
   const reset = () => {
     mesh.position.set(0, BALL_RADIUS, 13);
@@ -78,6 +79,7 @@ export const createBall = (): BallController => {
       );
     },
     update(delta) {
+      touchCooldown = Math.max(0, touchCooldown - delta);
       mesh.position.addScaledVector(velocity, delta);
       velocity.y -= GRAVITY * delta;
 
@@ -137,7 +139,15 @@ export const createBall = (): BallController => {
       dribbleTarget.sub(mesh.position);
 
       if (dribbleTarget.lengthSq() > 0.04) {
-        velocity.addScaledVector(dribbleTarget, Math.min(delta * 18, 0.75));
+        const touchStrength = touchCooldown <= 0 ? 0.95 : 0.28;
+        velocity.addScaledVector(dribbleTarget, Math.min(delta * 16, touchStrength));
+        if (touchCooldown <= 0) {
+          touchCooldown = THREE.MathUtils.lerp(
+            0.32,
+            0.14,
+            THREE.MathUtils.clamp(playerSpeed / 12, 0, 1),
+          );
+        }
       }
       velocity.lerp(
         dribbleVelocity.multiplyScalar(THREE.MathUtils.lerp(2.4, 5.2, playerSpeed / 12)),
