@@ -82,5 +82,5 @@ export const createPlayer = () => {
   rightBoot.position.x = 0.22;
   player.add(leftBoot, rightBoot);
 
-  return { player, leftLeg, rightLeg };
+  return { player, leftLeg, rightLeg, leftArm, rightArm };
 };

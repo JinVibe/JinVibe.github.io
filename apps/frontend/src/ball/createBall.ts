@@ -16,7 +16,12 @@ export type BallController = {
   reset: () => void;
   isNear: (position: THREE.Vector3, distance?: number) => boolean;
   nudge: (direction: THREE.Vector3, delta: number) => void;
-  dribbleTo: (position: THREE.Vector3, direction: THREE.Vector3, delta: number) => void;
+  dribbleTo: (
+    position: THREE.Vector3,
+    direction: THREE.Vector3,
+    delta: number,
+    playerSpeed?: number,
+  ) => void;
 };
 
 export const createBall = (): BallController => {
@@ -120,14 +125,24 @@ export const createBall = (): BallController => {
     nudge(direction, delta) {
       velocity.addScaledVector(direction, 5.8 * delta);
     },
-    dribbleTo(position, direction, delta) {
+    dribbleTo(position, direction, delta, playerSpeed = 0) {
       const dribbleDirection =
         direction.lengthSq() > 0 ? direction : idleVector.set(0, 0, -1);
       dribbleVelocity.copy(dribbleDirection).normalize();
-      dribbleTarget.copy(position).addScaledVector(dribbleVelocity, 1.15);
+      dribbleTarget.copy(position).addScaledVector(
+        dribbleVelocity,
+        THREE.MathUtils.lerp(0.92, 1.38, THREE.MathUtils.clamp(playerSpeed / 12, 0, 1)),
+      );
       dribbleTarget.y = BALL_RADIUS;
-      mesh.position.lerp(dribbleTarget, Math.min(delta * 10, 1));
-      velocity.lerp(dribbleVelocity.multiplyScalar(3.4), Math.min(delta * 8, 1));
+      dribbleTarget.sub(mesh.position);
+
+      if (dribbleTarget.lengthSq() > 0.04) {
+        velocity.addScaledVector(dribbleTarget, Math.min(delta * 18, 0.75));
+      }
+      velocity.lerp(
+        dribbleVelocity.multiplyScalar(THREE.MathUtils.lerp(2.4, 5.2, playerSpeed / 12)),
+        Math.min(delta * 4.5, 1),
+      );
     },
   };
 };

@@ -30,8 +30,14 @@ const clock = new THREE.Clock();
 const input = createKeyboardInput();
 const pitch = createPitch();
 const stadium = createStadium();
-const { player, leftLeg, rightLeg } = createPlayer();
-const playerController = createPlayerController({ player, leftLeg, rightLeg });
+const { player, leftLeg, rightLeg, leftArm, rightArm } = createPlayer();
+const playerController = createPlayerController({
+  player,
+  leftLeg,
+  rightLeg,
+  leftArm,
+  rightArm,
+});
 const ball = createBall();
 let score = 0;
 
@@ -64,7 +70,12 @@ const animate = () => {
   setShotPower(movement.shotPower);
 
   if (ball.isNear(player.position)) {
-    ball.dribbleTo(player.position, directionalShot ?? facingDirection, delta);
+    ball.dribbleTo(
+      player.position,
+      directionalShot ?? facingDirection,
+      delta,
+      playerController.getSpeed(),
+    );
   }
 
   if (movement.shootReleased && ball.isNear(player.position, 2.35)) {
