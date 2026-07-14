@@ -3,18 +3,22 @@ export type MovementInput = {
   backward: boolean;
   left: boolean;
   right: boolean;
-  shoot: boolean;
+  shootHeld: boolean;
+  shootReleased: boolean;
+  shotPower: number;
 };
 
 export const createKeyboardInput = () => {
   const keys = new Set<string>();
-  let shootPressed = false;
+  let shootStart = 0;
+  let shootReleasePower = 0;
+  let shootReleased = false;
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === "Space") {
       event.preventDefault();
-      if (!event.repeat) {
-        shootPressed = true;
+      if (!event.repeat && shootStart === 0) {
+        shootStart = performance.now();
       }
     }
     keys.add(event.key.toLowerCase());
@@ -23,6 +27,11 @@ export const createKeyboardInput = () => {
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.code === "Space") {
       event.preventDefault();
+      if (shootStart > 0) {
+        shootReleasePower = Math.min((performance.now() - shootStart) / 1200, 1);
+        shootReleased = true;
+        shootStart = 0;
+      }
     }
     keys.delete(event.key.toLowerCase());
   };
@@ -32,14 +41,19 @@ export const createKeyboardInput = () => {
 
   return {
     getMovement(): MovementInput {
+      const heldPower =
+        shootStart > 0 ? Math.min((performance.now() - shootStart) / 1200, 1) : 0;
       const movement = {
         forward: keys.has("w") || keys.has("arrowup"),
         backward: keys.has("s") || keys.has("arrowdown"),
         left: keys.has("a") || keys.has("arrowleft"),
         right: keys.has("d") || keys.has("arrowright"),
-        shoot: shootPressed,
+        shootHeld: shootStart > 0,
+        shootReleased,
+        shotPower: shootReleased ? shootReleasePower : heldPower,
       };
-      shootPressed = false;
+      shootReleased = false;
+      shootReleasePower = 0;
 
       return movement;
     },

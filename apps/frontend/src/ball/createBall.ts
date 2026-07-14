@@ -2,8 +2,12 @@ import * as THREE from "three";
 import { PITCH } from "../world/pitch";
 
 const BALL_RADIUS = 0.42;
-const FRICTION = 0.985;
+const FRICTION = 0.982;
 const GRAVITY = 18;
+const idleVector = new THREE.Vector3();
+const shotDirection = new THREE.Vector3();
+const dribbleTarget = new THREE.Vector3();
+const dribbleVelocity = new THREE.Vector3();
 
 export type BallController = {
   mesh: THREE.Mesh;
@@ -12,6 +16,7 @@ export type BallController = {
   reset: () => void;
   isNear: (position: THREE.Vector3, distance?: number) => boolean;
   nudge: (direction: THREE.Vector3, delta: number) => void;
+  dribbleTo: (position: THREE.Vector3, direction: THREE.Vector3, delta: number) => void;
 };
 
 export const createBall = (): BallController => {
@@ -26,6 +31,28 @@ export const createBall = (): BallController => {
   mesh.position.set(0, BALL_RADIUS, 13);
   mesh.castShadow = true;
 
+  const patchMaterial = new THREE.MeshStandardMaterial({
+    color: 0x161616,
+    roughness: 0.64,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+  });
+  const patchGeometry = new THREE.CircleGeometry(0.13, 6);
+  const patchDirections = [
+    new THREE.Vector3(0, 1, 0),
+    new THREE.Vector3(0.75, 0.22, 0.62),
+    new THREE.Vector3(-0.7, 0.18, 0.68),
+    new THREE.Vector3(0.42, -0.28, -0.86),
+    new THREE.Vector3(-0.52, -0.22, -0.82),
+  ];
+  patchDirections.forEach((direction) => {
+    const normal = direction.normalize();
+    const patch = new THREE.Mesh(patchGeometry, patchMaterial);
+    patch.position.copy(normal).multiplyScalar(BALL_RADIUS + 0.006);
+    patch.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
+    mesh.add(patch);
+  });
+
   const velocity = new THREE.Vector3();
   const spinAxis = new THREE.Vector3(1, 0, 0);
 
@@ -36,9 +63,14 @@ export const createBall = (): BallController => {
 
   return {
     mesh,
-    kick(direction, power = 29) {
-      const shotDirection = direction.clone().normalize();
-      velocity.set(shotDirection.x * power, 7.4, shotDirection.z * power);
+    kick(direction, power = 0.55) {
+      shotDirection.copy(direction).normalize();
+      const shotPower = THREE.MathUtils.lerp(17, 42, power);
+      velocity.set(
+        shotDirection.x * shotPower,
+        THREE.MathUtils.lerp(3.8, 9.2, power),
+        shotDirection.z * shotPower,
+      );
     },
     update(delta) {
       mesh.position.addScaledVector(velocity, delta);
@@ -86,7 +118,16 @@ export const createBall = (): BallController => {
       return mesh.position.distanceTo(position) <= distance;
     },
     nudge(direction, delta) {
-      velocity.addScaledVector(direction, 8 * delta);
+      velocity.addScaledVector(direction, 5.8 * delta);
+    },
+    dribbleTo(position, direction, delta) {
+      const dribbleDirection =
+        direction.lengthSq() > 0 ? direction : idleVector.set(0, 0, -1);
+      dribbleVelocity.copy(dribbleDirection).normalize();
+      dribbleTarget.copy(position).addScaledVector(dribbleVelocity, 1.15);
+      dribbleTarget.y = BALL_RADIUS;
+      mesh.position.lerp(dribbleTarget, Math.min(delta * 10, 1));
+      velocity.lerp(dribbleVelocity.multiplyScalar(3.4), Math.min(delta * 8, 1));
     },
   };
 };

@@ -45,7 +45,7 @@ export const createPitch = () => {
   const grass = new THREE.Mesh(
     new THREE.PlaneGeometry(PITCH.width + 10, PITCH.length + 10, 1, 1),
     new THREE.MeshStandardMaterial({
-      color: 0x3f8f48,
+      color: 0x2f6f3a,
       roughness: 0.92,
     }),
   );
@@ -54,11 +54,11 @@ export const createPitch = () => {
   group.add(grass);
 
   const stripeMaterialA = new THREE.MeshStandardMaterial({
-    color: 0x347f3e,
+    color: 0x2a6336,
     roughness: 0.96,
   });
   const stripeMaterialB = new THREE.MeshStandardMaterial({
-    color: 0x449653,
+    color: 0x377944,
     roughness: 0.96,
   });
 

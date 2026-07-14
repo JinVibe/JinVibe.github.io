@@ -4,19 +4,19 @@ export const createPlayer = () => {
   const player = new THREE.Group();
 
   const kitMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1d5fd1,
-    roughness: 0.58,
+    color: 0x0f172a,
+    roughness: 0.66,
   });
   const shortMaterial = new THREE.MeshStandardMaterial({
-    color: 0x13213d,
-    roughness: 0.62,
+    color: 0x111827,
+    roughness: 0.72,
   });
   const skinMaterial = new THREE.MeshStandardMaterial({
     color: 0xd8a16f,
     roughness: 0.55,
   });
   const sockMaterial = new THREE.MeshStandardMaterial({
-    color: 0xf1f5f9,
+    color: 0xe5e7eb,
     roughness: 0.5,
   });
   const bootMaterial = new THREE.MeshStandardMaterial({
@@ -25,34 +25,34 @@ export const createPlayer = () => {
   });
 
   const torso = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.46, 0.78, 6, 14),
+    new THREE.CapsuleGeometry(0.42, 0.92, 7, 16),
     kitMaterial,
   );
   torso.castShadow = true;
-  torso.position.y = 1.58;
+  torso.position.y = 1.6;
   player.add(torso);
 
   const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.32, 18, 14),
+    new THREE.SphereGeometry(0.28, 18, 14),
     skinMaterial,
   );
-  head.position.y = 2.34;
+  head.position.y = 2.32;
   head.castShadow = true;
   player.add(head);
 
   const hair = new THREE.Mesh(
-    new THREE.SphereGeometry(0.335, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.48),
+    new THREE.SphereGeometry(0.29, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.48),
     new THREE.MeshStandardMaterial({ color: 0x2a1a12, roughness: 0.8 }),
   );
-  hair.position.y = 2.43;
+  hair.position.y = 2.39;
   hair.castShadow = true;
   player.add(hair);
 
   const shorts = new THREE.Mesh(
-    new THREE.BoxGeometry(0.86, 0.34, 0.5),
+    new THREE.BoxGeometry(0.78, 0.3, 0.46),
     shortMaterial,
   );
-  shorts.position.y = 1.0;
+  shorts.position.y = 1.02;
   shorts.castShadow = true;
   player.add(shorts);
 
